@@ -77,7 +77,7 @@ public final class AOCAdESSigner implements AOSigner {
                        final String algorithm,
                        final PrivateKey key,
                        final Certificate[] certChain,
-                       final Properties xParams) throws AOException {
+                       final Properties xParams) throws AOException, IOException {
 
 
     	if (certChain == null || certChain.length < 1) {

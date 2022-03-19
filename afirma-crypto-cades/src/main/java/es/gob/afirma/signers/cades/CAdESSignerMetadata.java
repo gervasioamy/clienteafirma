@@ -9,6 +9,10 @@
 
 package es.gob.afirma.signers.cades;
 
+import org.spongycastle.cert.X509AttributeCertificateHolder;
+import org.spongycastle.util.encoders.Base64;
+
+import java.io.IOException;
 import java.util.List;
 
 /** Metadatos del firmante de una firma CAdES.
@@ -16,6 +20,8 @@ import java.util.List;
 public final class CAdESSignerMetadata {
 
 	private final CAdESSignerLocation signerLocation;
+
+	private final CAdESSignerAttribute signerAttribute;
 
 	private static final int POSTAL_ADDRESS_MAX_LINES = 6;
 
@@ -26,14 +32,20 @@ public final class CAdESSignerMetadata {
 	 *                estaba situado el firmante en el momento de la firma. */
 	public CAdESSignerMetadata(final String country,
 			                   final String locality,
-			                   final List<String> address) {
+			                   final List<String> address,
+							   final String base64AttributeCertificate) throws IOException {
 		this.signerLocation = new CAdESSignerLocation(country, locality, address);
+		this.signerAttribute = new CAdESSignerAttribute(base64AttributeCertificate);
 	}
 
 	/** Obtiene los metadatos de situaci&oacute;n del firmante en el momento de la firma.
 	 * @return Metadatos de situaci&oacute;n del firmante en el momento de la firma. */
 	public CAdESSignerLocation getSignerLocation() {
 		return this.signerLocation;
+	}
+
+	public CAdESSignerAttribute getSignerAttribute(){
+		return this.signerAttribute;
 	}
 
 
@@ -83,4 +95,20 @@ public final class CAdESSignerMetadata {
 
 	}
 
+	public static final class CAdESSignerAttribute{
+		private X509AttributeCertificateHolder attributeCertificate;
+		CAdESSignerAttribute (final String base64AttributeCertificate) throws IOException
+		{
+			try {
+				if(!base64AttributeCertificate.trim().equalsIgnoreCase("")&& base64AttributeCertificate != null) {
+					this.attributeCertificate = new X509AttributeCertificateHolder(Base64.decode(base64AttributeCertificate));
+				}
+			} catch(IOException e) {
+				throw new IOException("Error generando el Certificado de Atributos codificado en base64");
+			}
+		}
+		public X509AttributeCertificateHolder getAttributeCertificate(){
+			return attributeCertificate;
+		}
+	}
 }

@@ -9,6 +9,7 @@
 
 package es.gob.afirma.signers.cades;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -17,6 +18,7 @@ import java.util.Properties;
 import org.spongycastle.asn1.ASN1Encodable;
 import org.spongycastle.asn1.DERSequence;
 import org.spongycastle.asn1.DERUTF8String;
+import org.spongycastle.asn1.esf.SignerAttribute;
 import org.spongycastle.asn1.esf.SignerLocation;
 
 /** Clase de utilidad para el manejo de las estructuras CAdES <i>id-aa-ets-signerLocation</i> y
@@ -31,7 +33,7 @@ public final class CAdESSignerMetadataHelper {
 	/** Obtiene los metadatos del firmante a partir de los par&aacute;metros adicionales.
 	 * @param extraParams Par&aacute;metros adicionales que contienen las propiedades de los metadatos.
 	 * @return Metadatos del firmante */
-	public static CAdESSignerMetadata getCAdESSignerMetadata(final Properties extraParams) {
+	public static CAdESSignerMetadata getCAdESSignerMetadata(final Properties extraParams) throws IOException {
 		if (extraParams == null) {
 			return null;
 		}
@@ -46,11 +48,16 @@ public final class CAdESSignerMetadataHelper {
 
 		// signerLocationLocalityName
 		final String locality = extraParams.getProperty(CAdESExtraParams.SIGNATURE_PRODUCTION_CITY);
-		if (postalAddress != null || country != null || locality != null) {
+
+		// signerAttribute
+		final String base64AttributeCertificate = extraParams.getProperty("signerAttribute");
+
+		if (postalAddress != null || country != null || locality != null || base64AttributeCertificate != null) {
 			return new CAdESSignerMetadata(
-				country,
-				locality,
-				postalAddress
+				    country,
+				    locality,
+				    postalAddress,
+                    base64AttributeCertificate
 			);
 		}
 		return null;
@@ -85,5 +92,11 @@ public final class CAdESSignerMetadataHelper {
 					null
 		);
 	}
+
+    public static SignerAttribute getSignerAttribute(final CAdESSignerMetadata.CAdESSignerAttribute csa){
+        if(csa == null || csa.getAttributeCertificate() == null)
+            return null;
+        return new SignerAttribute(csa.getAttributeCertificate().toASN1Structure());
+    }
 
 }

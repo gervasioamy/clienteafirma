@@ -29,6 +29,7 @@ import org.spongycastle.asn1.DERUTCTime;
 import org.spongycastle.asn1.DERUTF8String;
 import org.spongycastle.asn1.cms.Attribute;
 import org.spongycastle.asn1.cms.CMSAttributes;
+import org.spongycastle.asn1.esf.SignerAttribute;
 import org.spongycastle.asn1.esf.SignerLocation;
 import org.spongycastle.asn1.ess.ContentHints;
 import org.spongycastle.asn1.ess.ESSCertID;
@@ -504,6 +505,13 @@ public final class CAdESUtils {
         		);
         	}
         }
+
+		if (config.getMetadata() != null) {
+			SignerAttribute signerAttribute = CAdESSignerMetadataHelper.getSignerAttribute(config.getMetadata().getSignerAttribute());
+			if (signerAttribute != null) {
+				contextSpecific.add(new Attribute(PKCSObjectIdentifiers.id_aa_ets_signerAttr, new DERSet(signerAttribute)));
+			}
+		}
 
         // Roles del firmante. De entre los distintos roles que pueden agregarse a una firma,
         // solo se soporta agregar los roles declarados. La estructua para la declaracion de

@@ -1,5 +1,6 @@
 package es.gob.afirma.signers.cades;
 
+import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
@@ -70,7 +71,7 @@ public class CAdESParameters {
 	 * @return Par&aacute;metros para la creaci&oacute;n de la firma.
 	 * @throws AOException Cuando ocurre un error grave al procesasr los par&aacute;metros.
 	 */
-	public static CAdESParameters load(final byte[] data, final String algorithm, final Properties config) throws AOException {
+	public static CAdESParameters load(final byte[] data, final String algorithm, final Properties config) throws AOException, IOException {
 
 		final CAdESParameters dataConfig = new CAdESParameters();
 
